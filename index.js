@@ -27,32 +27,43 @@ async function run() {
             res.send(services);
         });
 
-        // GET Single Service
-        app.get('/services/:id', async (req, res) => {
-            const id = req.params.id;
-            console.log('getting specific service', id);
-            const query = { _id: ObjectId(id) };
-            const service = await servicesCollection.findOne(query);
-            res.json(service);
-        })
-
-        // POST API
-        app.post('/services', async (req, res) => {
-            const service = req.body;
-            console.log('hit the post api', service);
-
-            const result = await servicesCollection.insertOne(service);
-            console.log(result);
-            res.json(result)
+          // Use POST to get data by keys
+          app.post('/services/:id', async (req, res) => {
+            const keys = req.body;
+            const query = { key: { $in: keys } }
+            const services = await servicesCollection.find(query).toArray();
+            res.send(services);
         });
+        
+        //user data to db
+    const database1 = client.db("newusers");
+    const usercollection = database1.collection("data");
 
-        // DELETE API
-        app.delete('/services/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await servicesCollection.deleteOne(query);
-            res.json(result);
-        })
+    //get api 
+    app.get('/users',async(req, res)=>{
+      const cursor=usercollection.find({});
+      const users=await cursor.toArray();
+      res.send(users);
+
+    })
+   
+    //post method
+app.post('/users', async (req, res)=>{
+  const newuser=req.body;
+  const result = await usercollection.insertOne(newuser);
+  console.log('hitting the post', req.body)
+  res.json(result)
+});
+
+//delete api
+app.delete('/users/:id', async (req, res)=>{
+  const id=req.params.id;
+  const query= {_id: ObjectId(id) }
+  const result=await usercollection.deleteOne(query);
+  console.log("deleting id", result);
+  res.json(result)
+}) 
+
 
     }
     finally {
