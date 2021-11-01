@@ -37,6 +37,7 @@ async function run() {
         });
         
         //user data to db
+        await client.connect(); 
     const database1 = client.db("newusers");
     const usercollection = database1.collection("data");
 
@@ -78,9 +79,7 @@ app.get('/', (req, res) => {
     res.send('Running  Server');
 });
 
-app.get('/hello', (req, res) => {
-    res.send('hello updated here')
-})
+
 
 app.listen(port, () => {
     console.log('Running Server on port', port);
